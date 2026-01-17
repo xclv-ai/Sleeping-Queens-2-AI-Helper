@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'https://esm.sh/react@18.3.1';
 import CameraView from './components/CameraView';
 import SuggestionDisplay from './components/SuggestionDisplay';
 import { getGameSuggestion } from './services/geminiService';

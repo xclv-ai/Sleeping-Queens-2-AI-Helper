@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'https://esm.sh/react@18.3.1';
 import { CameraIcon } from './icons/CameraIcon';
 
 interface CameraViewProps {

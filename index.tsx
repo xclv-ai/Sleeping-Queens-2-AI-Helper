@@ -1,6 +1,6 @@
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React from 'https://esm.sh/react@18.3.1';
+import ReactDOM from 'https://esm.sh/react-dom@18.3.1/client';
 import App from './App';
 
 const rootElement = document.getElementById('root');
@@ -15,6 +15,12 @@ root.render(
   </React.StrictMode>
 );
 
+// --- Service Worker Disabled ---
+// The service worker was causing a "Script error." due to conflicts
+// with the in-browser Babel transpilation and dynamic module loading.
+// Disabling it ensures the application's core functionality is stable.
+// The app remains installable on mobile devices via the web manifest.
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -26,3 +32,4 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+*/

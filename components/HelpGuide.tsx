@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React from 'https://esm.sh/react@18.3.1';
 import { XIcon } from './icons/XIcon';
 
 interface HelpGuideProps {
@@ -17,40 +17,29 @@ const HelpGuide: React.FC<HelpGuideProps> = ({ onClose }) => {
         <XIcon className="w-6 h-6" />
       </button>
       
-      <h2 className="font-title text-2xl text-amber-200 mb-4">Руководство по запуску и использованию</h2>
+      <h2 className="font-title text-2xl text-amber-200 mb-4">Финальное исправление</h2>
       
       <div className="space-y-8">
-        <div>
-          <h3 className="font-title text-xl text-amber-300 mb-2">Шаг 1: Загрузка кода на GitHub</h3>
-          <p className="text-slate-300 mb-3">Я — AI и не могу получить доступ к вашему репозиторию. Чтобы загрузить код, выполните следующие команды в вашем терминале:</p>
-          <div className="space-y-2 bg-slate-900/50 p-4 rounded-lg font-mono text-sm text-slate-300">
-            <p><span className="text-green-400"># 1. Клонируйте ваш репозиторий</span><br/>$ git clone https://github.com/xclv-ai/Sleeping-Queens-2-AI-Helper.git</p>
-            <p><span className="text-green-400"># 2. Перейдите в папку</span><br/>$ cd Sleeping-Queens-2-AI-Helper</p>
-            <p className="text-green-400"># 3. Скопируйте все файлы приложения в эту папку.</p>
-            <p><span className="text-green-400"># 4. Добавьте, закоммитьте и отправьте файлы</span><br/>$ git add .<br/>$ git commit -m "feat: Add initial PWA application files"<br/>$ git push origin main</p>
-          </div>
+        <div className="bg-green-900/30 border border-green-500 p-4 rounded-lg">
+            <h3 className="font-bold text-green-300">Решение: Упрощение архитектуры</h3>
+            <p className="text-green-300 mt-1">Постоянная ошибка "Script error" была вызвана конфликтом между Service Worker (оффлайн-режим) и системой транспиляции кода в браузере. Чтобы гарантировать стабильную работу, оффлайн-функциональность была отключена. Приложение по-прежнему можно будет установить на главный экран.</p>
         </div>
 
-        <div>
-          <h3 className="font-title text-xl text-amber-300 mb-2">Шаг 2: Развертывание с помощью Netlify</h3>
-          <p className="text-slate-300 mb-3">Теперь, когда код находится в вашем репозитории, вы можете легко его развернуть.</p>
-          <ol className="list-decimal list-inside space-y-2 text-slate-300 bg-slate-900/50 p-4 rounded-lg">
-            <li>Зарегистрируйтесь на <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Netlify</a>, используя вашу учетную запись GitHub.</li>
-            <li>Нажмите "Add new site" → "Import an existing project".</li>
-            <li>Выберите ваш репозиторий: `xclv-ai/Sleeping-Queens-2-AI-Helper`.</li>
-            <li>Настройки сборки можно оставить пустыми. Просто нажмите "Deploy site".</li>
-            <li><strong>Важно:</strong> Настройте API-ключ. В настройках сайта на Netlify (`Site configuration` → `Build & deploy` → `Environment`), добавьте переменную окружения с именем `API_KEY` и вашим ключом Gemini в качестве значения.</li>
-            <li>После этого Netlify предоставит вам публичную ссылку на ваше рабочее приложение!</li>
-          </ol>
-        </div>
-
-        <div>
-          <h3 className="font-title text-xl text-amber-300 mb-2">Шаг 3: Установка на iPhone</h3>
-          <p className="text-slate-300 mb-3">Откройте полученную от Netlify ссылку в Safari на вашем iPhone.</p>
-          <ol className="list-decimal list-inside space-y-2 text-slate-300 bg-slate-900/50 p-4 rounded-lg">
-            <li>Нажмите на иконку "Поделиться" (квадрат со стрелкой вверх).</li>
-            <li>Пролистайте вниз и выберите "На экран «Домой»" (Add to Home Screen).</li>
-            <li>Нажмите "Добавить" (Add). Иконка появится на вашем рабочем столе.</li>
+        <div className="border-2 border-amber-400 rounded-lg p-4 shadow-lg shadow-amber-500/20">
+          <h3 className="font-title text-xl text-amber-300 mb-3">🚀 Ваш финальный шаг</h3>
+          <ol className="list-decimal list-inside space-y-3 text-slate-300">
+            <li>
+              <strong>Обновите `index.tsx`:</strong> Замените содержимое файла `index.tsx` в вашем GitHub репозитории на новый код, который я предоставил.
+            </li>
+            <li>
+              <strong>Отправьте изменения в GitHub:</strong> После обновления файла отправьте изменения в ваш репозиторий.
+            </li>
+            <li>
+              <strong>Vercel сделает все остальное:</strong> Vercel автоматически обнаружит изменения и развернет новую, рабочую версию вашего приложения.
+            </li>
+            <li>
+              <strong>Проверьте приложение:</strong> Откройте ссылку на ваше приложение. Белый экран и ошибки должны исчезнуть.
+            </li>
           </ol>
         </div>
       </div>
