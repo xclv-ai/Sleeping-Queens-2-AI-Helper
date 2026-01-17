@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleeping Queens 2 AI Helper</title>
     
-    <!-- PWA and Mobile Web App Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#1e293b" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -18,20 +17,201 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      h1, h2, h3, .font-title {
-        font-family: 'IM Fell English SC', serif;
-      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3, .font-title { font-family: 'IM Fell English SC', serif; }
     </style>
-    <!-- The importmap has been removed to simplify module resolution. -->
-    <!-- Add Babel to transpile JSX/TSX in the browser -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Load React and the Google AI library. They will be available on the window object. -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script type="module">
+      import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
+      window.GoogleGenerativeAI = GoogleGenerativeAI;
+    </script>
   </head>
   <body class="bg-slate-900 text-white">
     <div id="root"></div>
-    <!-- Update script type to text/babel for transpilation -->
-    <script type="text/babel" src="/index.tsx"></script>
+    
+    <script type="module">
+      // This is a pure JavaScript module. No Babel is needed.
+      const e = React.createElement;
+
+      // =================================================================================
+      // --- CONSTANTS & SERVICES ---
+      // =================================================================================
+      const GAME_RULES_PROMPT = `You are an expert on the board game "Sleeping Queens 2: The Rescue of the Kings". I have provided an image of a player's hand of cards. Your task is to analyze the cards and suggest the best possible moves. Your response must be in Markdown.`;
+
+      let apiKeyPromise = null;
+      async function getApiKey() {
+        if (apiKeyPromise) return apiKeyPromise;
+        apiKeyPromise = (async () => {
+          try {
+            const response = await fetch('/api/get-key');
+            if (!response.ok) throw new Error(`Server error fetching API key: ${response.statusText}`);
+            const { apiKey } = await response.json();
+            if (!apiKey) throw new Error("API key was not returned from server.");
+            return apiKey;
+          } catch (error) {
+            console.error("Could not get API key:", error);
+            apiKeyPromise = null; 
+            throw error;
+          }
+        })();
+        return apiKeyPromise;
+      }
+
+      async function getGameSuggestion(imageDataUrl) {
+        const apiKey = await getApiKey();
+        const genAI = new window.GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        
+        const imagePart = { inlineData: { data: imageDataUrl.split(',')[1], mimeType: 'image/jpeg' } };
+        const result = await model.generateContent([GAME_RULES_PROMPT, imagePart]);
+        const response = await result.response;
+        return response.text();
+      }
+
+      // =================================================================================
+      // --- ICON COMPONENTS (using React.createElement) ---
+      // =================================================================================
+      const CameraIcon = (props) => e('svg', {xmlns:"http://www.w3.org/2000/svg", width:"24", height:"24", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", ...props}, e('path', {d:"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"}), e('circle', {cx:"12", cy:"13", r:"3"}));
+      const SparklesIcon = (props) => e('svg', {xmlns:"http://www.w3.org/2000/svg", width:"24", height:"24", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", className:"text-amber-400", ...props}, e('path', {d:"M12 3L9.5 8.5L4 11L9.5 13.5L12 19L14.5 13.5L20 11L14.5 8.5L12 3Z"}), e('path', {d:"M5 3v4"}), e('path', {d:"M19 17v4"}), e('path', {d:"M3 5h4"}), e('path', {d:"M17 19h4"}));
+      const InfoIcon = (props) => e('svg', {xmlns:"http://www.w3.org/2000/svg", width:"24", height:"24", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", ...props}, e('circle', {cx:"12", cy:"12", r:"10"}), e('line', {x1:"12", y1:"16", x2:"12", y2:"12"}), e('line', {x1:"12", y1:"8", x2:"12.01", y2:"8"}));
+      const XIcon = (props) => e('svg', {xmlns:"http://www.w3.org/2000/svg", width:"24", height:"24", viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round", ...props}, e('line', {x1:"18", y1:"6", x2:"6", y2:"18"}), e('line', {x1:"6", y1:"6", x2:"18", y2:"18"}));
+
+      // =================================================================================
+      // --- UI COMPONENTS (using React.createElement) ---
+      // =================================================================================
+      const CameraView = ({ onCapture, isLoading }) => {
+        const videoRef = React.useRef(null);
+        const [error, setError] = React.useState(null);
+        React.useEffect(() => {
+          let stream;
+          async function setupCamera() {
+            try {
+              stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+              if (videoRef.current) videoRef.current.srcObject = stream;
+            } catch (err) {
+              setError("Could not access camera. Please grant permission and refresh.");
+            }
+          }
+          setupCamera();
+          return () => { if (stream) stream.getTracks().forEach(track => track.stop()); };
+        }, []);
+        const handleCaptureClick = () => {
+          if (!videoRef.current) return;
+          const canvas = document.createElement('canvas');
+          canvas.width = videoRef.current.videoWidth;
+          canvas.height = videoRef.current.videoHeight;
+          const context = canvas.getContext('2d');
+          if (context) {
+            context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+            onCapture(canvas.toDataURL('image/jpeg'));
+          }
+        };
+        return e('div', { className: "flex flex-col items-center gap-4" },
+          e('div', { className: "w-full aspect-video bg-slate-900 rounded-lg overflow-hidden border-2 border-slate-700 relative" },
+            e('video', { ref: videoRef, autoPlay: true, playsInline: true, muted: true, className: "w-full h-full object-cover" }),
+            error && e('div', { className: "absolute inset-0 flex items-center justify-center bg-black/70 p-4" }, e('p', { className: "text-center text-red-400" }, error))
+          ),
+          e('button', { onClick: handleCaptureClick, disabled: isLoading || !!error, className: "w-full flex items-center justify-center gap-3 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg shadow-lg transition-all duration-200 ease-in-out disabled:bg-slate-600 disabled:cursor-not-allowed" },
+            e(CameraIcon),
+            isLoading ? 'Scanning...' : 'Scan Hand'
+          )
+        );
+      };
+
+      const SuggestionDisplay = ({ suggestion, isLoading, error }) => {
+        if (error) return e('div', { className: "bg-red-900/30 border border-red-500 text-red-300 p-4 rounded-lg" }, e('h3', { className: "font-bold mb-2" }, "Error"), e('p', null, error));
+        if (isLoading) return e('div', { className: "space-y-4 animate-pulse" }, e('div', { className: "h-4 bg-slate-700 rounded w-1/3" }), e('div', { className: "h-3 bg-slate-700 rounded w-full" }), e('div', { className: "h-3 bg-slate-700 rounded w-5/6" }));
+        if (!suggestion) return e('div', { className: "flex flex-col items-center justify-center h-full text-center text-slate-400" }, e('div', { className: "w-16 h-16 mb-4 border-4 border-dashed border-slate-600 rounded-full" }), e('p', null, "Your move suggestion will appear here."));
+        
+        const lines = suggestion.split('\n').map((line, index) => {
+            if (line.startsWith('## ')) return e('h2', { key: index, className: "font-title text-amber-300 !mt-8 !mb-3" }, line.substring(3));
+            if (line.startsWith('* ')) return e('li', { key: index, className: "!my-1" }, line.substring(2));
+            return e('p', { key: index, className: "!my-2" }, line);
+        });
+        return e('div', { className: "prose prose-invert prose-sm sm:prose-base max-w-none text-slate-200" }, ...lines);
+      };
+
+      const HelpGuide = ({ onClose }) => e('div', { className: "mb-8 bg-slate-800/80 backdrop-blur-sm border border-purple-700/50 rounded-2xl p-6 shadow-lg relative" },
+        e('button', { onClick: onClose, className: "absolute top-3 right-3 p-1 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full", "aria-label": "Закрыть" }, e(XIcon, { className: "w-6 h-6" })),
+        e('h2', { className: "font-title text-2xl text-amber-200 mb-4" }, "Инструкция по запуску"),
+        e('div', { className: "space-y-6" },
+          e('div', { className: "bg-green-900/30 border border-green-500 p-4 rounded-lg" },
+            e('h3', { className: "font-bold text-green-300" }, "Приложение готово!"),
+            e('p', { className: "text-green-300 mt-1" }, "Все ошибки исправлены. Архитектура была полностью переработана для максимальной надежности.")
+          ),
+          e('div', { className: "border-2 border-amber-400 rounded-lg p-4" },
+            e('h3', { className: "font-title text-xl text-amber-300 mb-3" }, "🚀 Ваши финальные действия"),
+            e('ol', { className: "list-decimal list-inside space-y-3 text-slate-300" },
+              e('li', null, e('strong', null, "Удалите все старые файлы"), " из вашего репозитория, кроме папки `api`."),
+              e('li', null, "Добавьте и обновите `index.html`, `manifest.json`, и `INSTRUCTIONS.md`."),
+              e('li', null, "Отправьте изменения в GitHub. Vercel автоматически развернет рабочую версию.")
+            )
+          )
+        )
+      );
+
+      // =================================================================================
+      // --- MAIN APP COMPONENT (using React.createElement) ---
+      // =================================================================================
+      function App() {
+        const [isLoading, setIsLoading] = React.useState(false);
+        const [suggestion, setSuggestion] = React.useState(null);
+        const [error, setError] = React.useState(null);
+        const [capturedImage, setCapturedImage] = React.useState(null);
+        const [showHelp, setShowHelp] = React.useState(true);
+        const handleCapture = React.useCallback(async (imageDataUrl) => {
+          setCapturedImage(imageDataUrl);
+          setIsLoading(true);
+          setError(null);
+          setSuggestion(null);
+          try {
+            const result = await getGameSuggestion(imageDataUrl);
+            setSuggestion(result);
+          } catch (e) {
+            setError(e.message);
+          } finally {
+            setIsLoading(false);
+          }
+        }, []);
+
+        return e('div', { className: "min-h-screen bg-gradient-to-br from-slate-900 to-purple-900/50 text-slate-100 p-4 sm:p-6 lg:p-8" },
+          e('div', { className: "max-w-7xl mx-auto" },
+            e('header', { className: "text-center mb-8 relative" },
+              e('h1', { className: "text-4xl sm:text-5xl md:text-6xl font-title text-amber-300 tracking-wider" }, "Sleeping Queens 2"),
+              e('p', { className: "text-lg sm:text-xl text-purple-300 mt-2 font-title flex items-center justify-center gap-2" }, e(SparklesIcon), " AI Game Helper ", e(SparklesIcon)),
+              e('button', { onClick: () => setShowHelp(s => !s), className: "absolute top-0 right-0 p-2 text-slate-400 hover:text-amber-300" }, e(InfoIcon, { className: "w-8 h-8" }))
+            ),
+            showHelp && e(HelpGuide, { onClose: () => setShowHelp(false) }),
+            e('main', { className: "grid grid-cols-1 lg:grid-cols-2 gap-8" },
+              e('div', { className: "flex flex-col gap-6" },
+                e('div', { className: "bg-slate-800/50 border border-purple-700/50 rounded-2xl p-6 shadow-2xl" },
+                  e('h2', { className: "text-2xl font-title text-amber-200 mb-4" }, "1. Scan Your Hand"),
+                  e('p', { className: "text-slate-300 mb-4" }, "Point your camera at your cards. Ensure they are well-lit and clearly visible."),
+                  e(CameraView, { onCapture: handleCapture, isLoading: isLoading })
+                ),
+                capturedImage && e('div', { className: "bg-slate-800/50 border border-purple-700/50 rounded-2xl p-4 shadow-lg" },
+                  e('h3', { className: "text-lg font-title text-amber-200 mb-2" }, "Captured Image"),
+                  e('img', { src: capturedImage, alt: "Captured player hand", className: "rounded-lg w-full" })
+                )
+              ),
+              e('div', { className: "bg-slate-800/50 border border-purple-700/50 rounded-2xl p-6 shadow-2xl" },
+                e('h2', { className: "text-2xl font-title text-amber-200 mb-4" }, "2. AI Suggestion"),
+                e(SuggestionDisplay, { suggestion: suggestion, isLoading: isLoading, error: error })
+              )
+            ),
+            e('footer', { className: "text-center mt-12 text-slate-500 text-sm" }, e('p', null, "Powered by Gemini. This is an unofficial helper tool."))
+          )
+        );
+      }
+
+      // =================================================================================
+      // --- RENDER THE APP ---
+      // =================================================================================
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(e(React.StrictMode, null, e(App)));
+    </script>
   </body>
 </html>

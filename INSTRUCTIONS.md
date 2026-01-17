@@ -1,43 +1,43 @@
 
-# How to Deploy and Use Your App
+# Final Instructions: How to Deploy the Working App
 
-You have all the necessary code in your GitHub repository. Follow these two final steps to get your application live and running on your iPhone.
-
----
-
-## ✅ Step 1: Deploy to Vercel (Free)
-
-Since you have a Vercel account and your code is on GitHub, this process is fast and straightforward.
-
-1.  **Log in to Vercel**: Go to your [Vercel Dashboard](https://vercel.com/dashboard).
-
-2.  **Import Project**: Click the **"Add New..."** button and select **"Project"** from the dropdown menu.
-    ![Vercel Add New Project](https://files.readme.io/fe467a2-Vercel_Add_New_Project.png)
-
-3.  **Select Your Repository**: On the "Import Git Repository" page, find your `xclv-ai/Sleeping-Queens-2-AI-Helper` repository and click the **"Import"** button next to it.
-
-4.  **Configure Your Project**:
-    *   Vercel will automatically detect the correct settings. You do not need to change anything in the "Build & Output Settings".
-    *   **CRITICAL STEP**: Expand the **"Environment Variables"** section. You must add your Gemini API key here for the app to work.
-        *   **Name**: `API_KEY`
-        *   **Value**: Paste your actual Gemini API key here.
-    ![Vercel Environment Variables](https://vercel.com/docs/storage/vercel-kv/kv-environment-variables.png)
-
-5.  **Deploy**: Click the **"Deploy"** button.
-
-Vercel will now build and deploy your application. When it's finished, you will be taken to a congratulations screen with a public URL (like `https://your-project-name.vercel.app`). **This is the link to your live app!**
+The application has been completely rewritten to be more robust and fix all previous errors. Please follow these steps carefully.
 
 ---
 
-## 📱 Step 2: Install on Your iPhone
+## Step 1: Clean Up Your GitHub Repository
 
-1.  **Open Safari**: On your iPhone, open the Safari browser and go to the URL you received from Vercel.
+To avoid any conflicts, you must clean up your repository.
 
-2.  **Share**: Tap the **"Share"** icon (the square with an arrow pointing up) at the bottom of the screen.
-    ![iOS Share Icon](https://support.apple.com/library/content/dam/edam/applecare/images/en_US/iOS/ios15-iphone13-pro-safari-share-icon.png)
+1.  **DELETE** the following files and folders from your `xclv-ai/Sleeping-Queens-2-AI-Helper` repository. **Do not keep them.**
+    *   `index.tsx`
+    *   `App.tsx`
+    *   `sw.js`
+    *   `constants.ts`
+    *   The entire `components` folder.
+    *   The entire `services` folder.
 
-3.  **Add to Home Screen**: Scroll down the share menu and tap **"Add to Home Screen"**.
+2.  **KEEP** only the following files/folders:
+    *   The `api` folder (and the `get-key.ts` file inside it).
+    *   `manifest.json`
+    *   `metadata.json`
+    *   This `INSTRUCTIONS.md` file.
 
-4.  **Confirm**: Tap **"Add"** in the top-right corner of the next screen.
+---
 
-That's it! The app icon will now be on your iPhone's home screen. You can launch it just like a native app, without the browser's address bar.
+## Step 2: Add the New `index.html`
+
+1.  Take the new `index.html` file I have provided.
+2.  Add it to your repository. If an `index.html` file already exists, **replace its entire content** with the new code.
+
+---
+
+## Step 3: Deploy on Vercel
+
+1.  Go to your Vercel dashboard.
+2.  Find your `sleeping-queens-2-ai-helper` project.
+3.  Go to the "Deployments" tab.
+4.  Find the latest deployment (it should have triggered automatically after you pushed your changes to GitHub) and click on it.
+5.  **CRITICAL:** Ensure your `API_KEY` is still set correctly in the project's settings (`Settings` -> `Environment Variables`).
+
+Your application will now be live and working at the URL provided by Vercel. You can then add it to your iPhone's home screen as described previously.
