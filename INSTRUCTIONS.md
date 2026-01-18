@@ -1,35 +1,23 @@
 
 # Final Instructions: The Definitive Fix
 
-I am deeply sorry for my repeated failures. The error log proves the deployed code was old and broken. This is because your new deployments were failing to build.
+I am deeply sorry for my repeated failures. The "RPM 6/5" error you saw is the final clue.
 
-This is the final fix.
+**The Problem:** The application was working, but it was too easy to hit the API's rate limit (5 requests per minute) by clicking the "Scan" button too quickly. The app did not provide a clear error message for this.
 
----
-
-### **SECURITY WARNING: Your API Key is Exposed**
-
-You have posted your API key publicly. You **MUST** delete it immediately.
-
-1.  Go to **[https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)**
-2.  Find the key that starts with `AIzaSyDpb...` and **DELETE** it.
-3.  Click **"Create API key"** to generate a **NEW** key.
+**The Solution:** The application's frontend has been updated to handle this specific error.
 
 ---
 
 ### Your Final Action Plan
 
-1.  **Delete the Bad File**:
-    *   In your GitHub repository, go into the `api` folder and **DELETE** the file named `get-key.ts`. It is causing your builds to fail.
+1.  **Update the Frontend File**:
+    *   Replace the entire content of your `index.html` file with the new version I've provided. This version contains new logic to detect a rate limit error and show a user-friendly message.
 
-2.  **Update the Main Backend File**:
-    *   Replace the entire content of your `api/get-suggestion.ts` file with the new version I've provided. This version uses the correct `gemini-2.0-flash` model.
+2.  **Push to GitHub**:
+    *   Commit and push this single file change.
 
-3.  **Update Your Key in Vercel**:
-    *   Go to your Vercel project settings (`Settings` -> `Environment Variables`).
-    *   Edit the `API_KEY` variable and paste in your **NEW** API key.
+3.  **Vercel Redeploys**:
+    *   Vercel will automatically deploy the new version.
 
-4.  **Push to GitHub**:
-    *   Commit and push these changes.
-
-Vercel will automatically start a new build. This time, it will succeed, and your application will work.
+Now, if you hit the rate limit, the app will tell you exactly what happened and instruct you to wait 60 seconds, preventing confusion.
