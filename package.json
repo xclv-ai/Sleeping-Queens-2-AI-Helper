@@ -1,7 +1,10 @@
 
 {
   "name": "sleeping-queens-2-ai-helper-backend",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.12.12"
+  }
 }
