@@ -19,8 +19,8 @@ export default async function handler(request, response) {
         return response.status(500).json({ error: 'API_KEY environment variable is not set on the server.' });
     }
 
-    // 2. Construct the exact URL and request body as specified
-    const model = 'gemini-2.5-pro';
+    // 2. DEFINITIVE FIX: Use the exact model name provided by the user.
+    const model = 'gemini-2.0-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const requestBody = {
