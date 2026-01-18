@@ -1,0 +1,22 @@
+
+{
+  "short_name": "SQ2 Helper",
+  "name": "Sleeping Queens 2 AI Helper",
+  "description": "An AI-powered assistant for the board game 'Sleeping Queens 2'. Use your camera to scan your hand, and the app will recognize your cards and suggest the best move based on the game's rules.",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1e293b",
+  "background_color": "#0f172a"
+}
